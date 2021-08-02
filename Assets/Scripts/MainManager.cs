@@ -4,6 +4,9 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using System.IO;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 public class MainManager : MonoBehaviour
 {
@@ -30,6 +33,7 @@ public class MainManager : MonoBehaviour
     {
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
+        GetHighscoreAndName(); //set up known value
         
         int[] pointCountArray = new [] {1,1,2,2,5,5};
         for (int i = 0; i < LineCount; ++i)
@@ -92,13 +96,12 @@ public class MainManager : MonoBehaviour
             currentHighscorePlayer = ValueManager.Instance.enteredName;
             HighscoreText.GetComponent<Text>().text = "Best Score: " + currentHighscorePlayer + ": " + currentHighscore;
             ValueManager.Instance.highscore = m_Points;
+            ValueManager.Instance.nameOfHighscorePlayer = currentHighscorePlayer;
             
-            //Update Menu
-            //ValueManager.Instance.UpdateHighscoreMenu(currentHighscore, currentHighscorePlayer);
         }
     }
 
-    public void GetHighscoreAndName() //noch aufrufen und testen!!!!
+    public void GetHighscoreAndName() 
     {
         currentHighscore = ValueManager.Instance.highscore;
         currentHighscorePlayer = ValueManager.Instance.enteredName;
@@ -106,4 +109,14 @@ public class MainManager : MonoBehaviour
         HighscoreText.GetComponent<Text>().text = "Best Score: " + currentHighscorePlayer + ": " + currentHighscore;
     }
 
+    public void BackToMenu()
+    {
+        ValueManager.Instance.SaveHighscore();
+#if UNITY_EDITOR
+        EditorApplication.ExitPlaymode();
+#else
+        Application.Quit();
+#endif
+
+    }
 }

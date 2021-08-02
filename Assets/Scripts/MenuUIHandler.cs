@@ -27,6 +27,7 @@ public class MenuUIHandler : MonoBehaviour
 
     public void QuitGame()
     {
+        ValueManager.Instance.SaveHighscore();
 #if UNITY_EDITOR
         EditorApplication.ExitPlaymode();
 #else

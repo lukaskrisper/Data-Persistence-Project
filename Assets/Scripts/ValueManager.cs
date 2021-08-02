@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.IO;
 
 public class ValueManager : MonoBehaviour
 {
@@ -23,7 +24,7 @@ public class ValueManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     public void EnterPlayerName()
@@ -43,10 +44,43 @@ public class ValueManager : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
+        LoadHighscore();
+        UpdateHighscoreMenu();
     }
 
-    public void UpdateHighscoreMenu(int points, string name)
+    public void UpdateHighscoreMenu()
     {
-        HighscoreMenu.GetComponent<Text>().text = "HIGHSCORE: " + name + ": " + points;
+        HighscoreMenu.GetComponent<Text>().text = "HIGHSCORE: " + nameOfHighscorePlayer + ": " + highscore;
+    }
+
+    // For saving and loading
+    [System.Serializable]
+    class SaveData
+    {
+        public string nameOfHighscorePlayerToSaveAndLoad;
+        public int pointsOfHighscoreToSaveAndLoad;
+    }
+    public void SaveHighscore()
+    {
+        SaveData data = new SaveData();
+        data.nameOfHighscorePlayerToSaveAndLoad = nameOfHighscorePlayer;
+        data.pointsOfHighscoreToSaveAndLoad = highscore;
+
+        string json = JsonUtility.ToJson(data);
+
+        File.WriteAllText(Application.persistentDataPath + "/savefile.json", json);
+    }
+
+    public void LoadHighscore()
+    {
+        string path = Application.persistentDataPath + "/savefile.json";
+        if (File.Exists(path))
+        {
+            string json = File.ReadAllText(path);
+            SaveData data = JsonUtility.FromJson<SaveData>(json);
+
+            nameOfHighscorePlayer = data.nameOfHighscorePlayerToSaveAndLoad;
+            highscore = data.pointsOfHighscoreToSaveAndLoad;
+        }
     }
 }
