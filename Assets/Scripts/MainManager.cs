@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System.IO;
 
 public class MainManager : MonoBehaviour
 {
@@ -17,6 +18,11 @@ public class MainManager : MonoBehaviour
     private int m_Points;
     
     private bool m_GameOver = false;
+
+
+    public GameObject HighscoreText;
+    public int currentHighscore = 0;
+    public string currentHighscorePlayer;
 
     
     // Start is called before the first frame update
@@ -57,11 +63,12 @@ public class MainManager : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
+                Destroy(gameObject);
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
             }
         }
     }
-
+     
     void AddPoint(int point)
     {
         m_Points += point;
@@ -70,7 +77,33 @@ public class MainManager : MonoBehaviour
 
     public void GameOver()
     {
+        Debug.Log(m_Points);
+        UpdateHighscore(m_Points); //Update
+
         m_GameOver = true;
         GameOverText.SetActive(true);
     }
+
+    public void UpdateHighscore(int points)
+    {
+        if(currentHighscore < points)
+        {
+            currentHighscore = points;
+            currentHighscorePlayer = ValueManager.Instance.enteredName;
+            HighscoreText.GetComponent<Text>().text = "Best Score: " + currentHighscorePlayer + ": " + currentHighscore;
+            ValueManager.Instance.highscore = m_Points;
+            
+            //Update Menu
+            //ValueManager.Instance.UpdateHighscoreMenu(currentHighscore, currentHighscorePlayer);
+        }
+    }
+
+    public void GetHighscoreAndName() //noch aufrufen und testen!!!!
+    {
+        currentHighscore = ValueManager.Instance.highscore;
+        currentHighscorePlayer = ValueManager.Instance.enteredName;
+
+        HighscoreText.GetComponent<Text>().text = "Best Score: " + currentHighscorePlayer + ": " + currentHighscore;
+    }
+
 }
